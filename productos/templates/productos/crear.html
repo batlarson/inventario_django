@@ -1,0 +1,14 @@
+{% extends 'productos/base.html' %}
+
+{% block contenido %}
+    <h1>{% if editando %}Editar{% else %}Añadir{% endif %} Producto</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+            {% if editando %}Guardar Cambios{% else %}Crear Producto{% endif %}
+        </button>
+    </form>
+    <br>
+    <a href="{% url 'listado' %}">Volver atrás</a>
+{% endblock %}

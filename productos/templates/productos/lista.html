@@ -1,0 +1,40 @@
+{% extends 'productos/base.html' %}
+
+{% block contenido %}
+    <h1>Gestor de Inventario Inteligente</h1>
+
+    <p>Actualmente hay <strong>{{ cantidad }}</strong> productos registrados.</p>
+
+    <h3>📦 Todos los Productos</h3>
+    <ul>
+        {% for p in productos %}
+        <a href="{% url 'editar' p.id %}">✏️ Editar</a>
+            <li>
+                <strong>{{ p.nombre }}</strong> (Stock: {{ p.stock }}) - {{ p.precio }}€
+                <br>
+                <small>🤖 Sugerencia IA: {{ p.prediccion }}</small>
+            </li>
+            <hr>
+        {% empty %}
+            <li>No hay productos en la base de datos.</li>
+        {% endfor %}
+    </ul>
+
+    {% if critico %}
+        <h3 style="color: red;">⚠️ Alerta de Repuestos Críticos</h3>
+        <ul>
+            {% for p in critico %}
+                <li>{{ p.nombre|upper }} - ¡Solo quedan {{ p.stock }} unidades!</li>
+            {% endfor %}
+        </ul>
+    
+    {% endif %}
+
+    <br>
+    <a href="{% url 'crear' %}">➕ Añadir nuevo producto</a> |
+    <a href="{% url 'bienvenida' %}">🏠 Inicio</a>
+{% endblock %}
+
+{% block pie %}
+    <p>Estás viendo el inventario de la planta de Álava.</p>
+{% endblock %}
