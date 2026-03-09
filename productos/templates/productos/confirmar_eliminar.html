@@ -1,0 +1,14 @@
+{% extends 'productos/base.html' %}
+
+{% block contenido %}
+    <h1>¿Estás seguro?</h1>
+    <p>Vas a eliminar permanentemente el producto: <strong>{{ producto.nombre }}</strong></p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" style="background-color: #d9534f; color: white; padding: 10px; border: none; cursor: pointer;">
+            Sí, borrar definitivamente
+        </button>
+        <a href="{% url 'listado' %}" style="margin-left: 15px;">Cancelar</a>
+    </form>
+{% endblock %}

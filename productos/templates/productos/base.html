@@ -12,7 +12,16 @@
     </style>
 </head>
 <body>
-
+    {% if messages %}
+        <div style="margin: 20px;">
+            {% for message in messages %}
+                <div style="padding: 15px; background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; border-radius: 4px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
     <nav>
         <a href="{% url 'bienvenida' %}">🏠 Inicio</a>
         <a href="{% url 'listado' %}">📋 Inventario</a>

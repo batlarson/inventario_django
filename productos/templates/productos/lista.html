@@ -8,7 +8,8 @@
     <h3>📦 Todos los Productos</h3>
     <ul>
         {% for p in productos %}
-        <a href="{% url 'editar' p.id %}">✏️ Editar</a>
+        <a href="{% url 'editar' p.id %}">✏️ Editar</a> |
+        <a href="{% url 'eliminar' p.id %}" style="color: red;">🗑️ Borrar</a>
             <li>
                 <strong>{{ p.nombre }}</strong> (Stock: {{ p.stock }}) - {{ p.precio }}€
                 <br>
