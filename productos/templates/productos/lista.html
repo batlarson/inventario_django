@@ -5,13 +5,29 @@
 
     <p>Actualmente hay <strong>{{ cantidad }}</strong> productos registrados.</p>
 
+    <div style="margin-bottom: 20px; padding: 10px; background: #f4f4f4; border-radius: 5px;">
+        <strong>Filtrar por:</strong>
+        <a href="{% url 'listado' %}" style="margin-right: 10px;">Todos</a>
+       
+        {% for cat in categorias %}
+        <a href="?categoria={{ cat.id }} " style="margin-right: 10px;">{{ cat.nombre }} </a>
+        {% endfor %}
+
+        <a href="?">❌ Quitar filtros</a>
+
+        <form method="GET">
+            <input type="text" name="buscar" placeholder="Nombre del producto...">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
     <h3>📦 Todos los Productos</h3>
     <ul>
         {% for p in productos %}
         <a href="{% url 'editar' p.id %}">✏️ Editar</a> |
         <a href="{% url 'eliminar' p.id %}" style="color: red;">🗑️ Borrar</a>
             <li>
-                <strong>{{ p.nombre }}</strong> (Stock: {{ p.stock }}) - {{ p.precio }}€
+                <strong>{{ p.nombre }}</strong> ({{ p.categoria.nombre|default:"Sin categoría" }}) (Stock: {{ p.stock }}) - {{ p.precio }}€
                 <br>
                 <small>🤖 Sugerencia IA: {{ p.prediccion }}</small>
             </li>

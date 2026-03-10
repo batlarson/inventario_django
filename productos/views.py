@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
-from .models import Producto
+from .models import Producto, Categoria
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 
@@ -10,16 +10,26 @@ def bienvenida(request):
     return render(request, 'productos/bienvenida.html')
 
 def listado_productos(request):
-    todos = Producto.objects.all()
-    criticos = Producto.objects.filter(stock__lt=10)
+    productos = Producto.objects.all()
+    categorias = Categoria.objects.all()
     
-    for p in todos:
+    categoria_id = request.GET.get('categoria')
+    if categoria_id:
+        productos = productos.filter(categoria_id=categoria_id)
+    
+    nombre_buscar = request.GET.get('buscar')
+    if nombre_buscar:
+        productos = productos.filter(nombre__icontains=nombre_buscar)
+
+    criticos = productos.filter(stock__lt=10)
+    for p in productos:
         p.prediccion = predecir_reabastecimiento(p.stock, p.precio)
     
     contexto = {
-        'productos': todos,
+        'productos': productos,
+        'categorias': categorias,
         'critico': criticos,
-        'cantidad': todos.count()
+        'cantidad': productos.count()
     }
     return render(request, 'productos/lista.html', contexto)
 
