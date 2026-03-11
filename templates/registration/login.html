@@ -1,0 +1,14 @@
+{% extends 'productos/base.html' %}
+
+{% block contenido %}
+<div style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+    <h2>🔐 Iniciar Sesión</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #333; color: white; border: none; cursor: pointer;">
+            Entrar al Inventario
+        </button>
+    </form>
+</div>
+{% endblock %}

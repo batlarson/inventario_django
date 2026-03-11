@@ -55,7 +55,7 @@ ROOT_URLCONF = 'inventario_core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,4 +117,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-LOGIN_URL = '/login/'
+LOGIN_URL = 'login'
+
+LOGIN_REDIRECT_URL = 'listado'
+LOGOUT_REDIRECT_URL = 'login'   
