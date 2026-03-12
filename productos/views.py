@@ -10,7 +10,7 @@ def bienvenida(request):
     return render(request, 'productos/bienvenida.html')
 
 def listado_productos(request):
-    productos = Producto.objects.all()
+    productos = Producto.objects.filter(usuario=request.user)
     categorias = Categoria.objects.all()
     
     categoria_id = request.GET.get('categoria')
@@ -38,7 +38,9 @@ def crear_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST)
         if form.is_valid():
-            form.save()
+            producto = form.save(commit=False)
+            producto.usuario = request.user
+            producto.save()
             return redirect('listado')
     else:
         form = ProductoForm()
