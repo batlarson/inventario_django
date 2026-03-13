@@ -2,54 +2,93 @@
 
 {% block contenido %}
     <h1>Gestor de Inventario Inteligente</h1>
-
     <p>Actualmente hay <strong>{{ cantidad }}</strong> productos registrados.</p>
 
     <div style="margin-bottom: 20px; padding: 10px; background: #f4f4f4; border-radius: 5px;">
         <strong>Filtrar por:</strong>
         <a href="{% url 'listado' %}" style="margin-right: 10px;">Todos</a>
-       
         {% for cat in categorias %}
-        <a href="?categoria={{ cat.id }} " style="margin-right: 10px;">{{ cat.nombre }} </a>
+            <a href="?categoria={{ cat.id }}" style="margin-right: 10px;">{{ cat.nombre }}</a>
         {% endfor %}
-
         <a href="?">❌ Quitar filtros</a>
 
-        <form method="GET">
-            <input type="text" name="buscar" placeholder="Nombre del producto...">
+        <form method="GET" style="display: inline-block; margin-left: 20px;">
+            <input type="text" name="buscar" placeholder="Nombre del producto..." value="{{ request.GET.buscar }}">
             <button type="submit">Buscar</button>
         </form>
     </div>
 
-    <h3>📦 Todos los Productos</h3>
-    <ul>
-        {% for p in productos %}
-        <a href="{% url 'editar' p.id %}">✏️ Editar</a> |
-        <a href="{% url 'eliminar' p.id %}" style="color: red;">🗑️ Borrar</a>
-            <li>
-                <strong>{{ p.nombre }}</strong> ({{ p.categoria.nombre|default:"Sin categoría" }}) (Stock: {{ p.stock }}) - {{ p.precio }}€
-                <br>
-                <small>🤖 Sugerencia IA: {{ p.prediccion }}</small>
-            </li>
-            <hr>
-        {% empty %}
-            <li>No hay productos en la base de datos.</li>
-        {% endfor %}
-    </ul>
+    <div style="display: flex; gap: 40px; align-items: flex-start;">
+        
+        <div style="flex: 2;">
+            <h3>📦 Todos los Productos</h3>
+            <ul style="list-style: none; padding: 0;">
+                {% for p in productos %}
+                    <li style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+                        <a href="{% url 'editar' p.id %}">✏️ Editar</a> |
+                        <a href="{% url 'eliminar' p.id %}" style="color: red;">🗑️ Borrar</a>
+                        <br>
+                        <strong>{{ p.nombre }}</strong> ({{ p.categoria.nombre|default:"Sin categoría" }}) 
+                        - Stock: <strong>{{ p.stock }}</strong> | {{ p.precio }}€
+                        <br>
+                        <small>🤖 Sugerencia IA: {{ p.prediccion }}</small>
+                    </li>
+                {% empty %}
+                    <li>No hay productos en la base de datos.</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    {% if critico %}
-        <h3 style="color: red;">⚠️ Alerta de Repuestos Críticos</h3>
-        <ul>
-            {% for p in critico %}
-                <li>{{ p.nombre|upper }} - ¡Solo quedan {{ p.stock }} unidades!</li>
-            {% endfor %}
-        </ul>
+        <div style="flex: 1; min-width: 300px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            <h3 style="text-align: center;">Resumen de Stock</h3>
+            <canvas id="miGrafico"></canvas> 
+        </div>
+
+    </div> 
     
+    {% if criticos %}
+        <div style="margin-top: 30px; padding: 15px; border: 2px solid red; border-radius: 10px;">
+            <h3 style="color: red; margin-top: 0;">⚠️ Alerta de Repuestos Críticos</h3>
+            <ul>
+                {% for p in criticos %}
+                    <li>{{ p.nombre|upper }} - ¡Solo quedan {{ p.stock }} unidades!</li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
 
     <br>
     <a href="{% url 'crear' %}">➕ Añadir nuevo producto</a> |
     <a href="{% url 'bienvenida' %}">🏠 Inicio</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {{ labels|json_script:"labels-data" }}
+    {{ data|json_script:"data-values" }}
+
+    <script>
+        const ctx = document.getElementById('miGrafico');
+        const labels = JSON.parse(document.getElementById('labels-data').textContent);
+        const data = JSON.parse(document.getElementById('data-values').textContent);
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels, 
+                datasets: [{
+                    label: 'Cantidad de Productos',
+                    data: data,
+                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
 {% endblock %}
 
 {% block pie %}

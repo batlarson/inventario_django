@@ -2,16 +2,36 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
+from django.db.models import Count, Sum
 from .models import Producto, Categoria
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 
 def bienvenida(request):
-    return render(request, 'productos/bienvenida.html')
+    mis_productos = Producto.objects.filter(usuario=request.user)
+    
+    total_articulos = mis_productos.count()
+    
+    valor_total = mis_productos.aggregate(Sum('precio'))['precio__sum'] or 0
+    
+    alertas = mis_productos.filter(stock__lt=10).count()
 
+    contexto = {
+        'total': total_articulos,
+        'valor': valor_total,
+        'alertas': alertas,
+    }
+    return render(request, 'productos/bienvenida.html', contexto)
+
+@login_required
 def listado_productos(request):
     productos = Producto.objects.filter(usuario=request.user)
     categorias = Categoria.objects.all()
+
+    conteo_categorias = productos.values('categoria__nombre').annotate(total=Count('id'))
+
+    labels = [item['categoria__nombre'] or "Sin Categoría" for item in conteo_categorias]
+    data = [item['total'] for item in conteo_categorias]
     
     categoria_id = request.GET.get('categoria')
     if categoria_id:
@@ -28,8 +48,10 @@ def listado_productos(request):
     contexto = {
         'productos': productos,
         'categorias': categorias,
-        'critico': criticos,
-        'cantidad': productos.count()
+        'criticos': criticos,
+        'cantidad': productos.count(),
+        'labels': labels,
+        'data': data,
     }
     return render(request, 'productos/lista.html', contexto)
 
