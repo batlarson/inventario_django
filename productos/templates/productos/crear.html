@@ -4,6 +4,19 @@
     <h1>{% if editando %}Editar{% else %}Añadir{% endif %} Producto</h1>
     <form method="POST">
         {% csrf_token %}
+        {% if form.errors %}
+        <div style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <strong>Por favor, corrige los siguientes errores:</strong>
+            {{ form.non_field_errors }}
+            <ul>
+            {% for field in form %}
+                {% if field.errors %}
+                    <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
         {{ form.as_p }}
         <button type="submit">
             {% if editando %}Guardar Cambios{% else %}Crear Producto{% endif %}
