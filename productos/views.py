@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, F
 from .models import Producto, Categoria
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
@@ -12,7 +12,13 @@ def bienvenida(request):
     
     total_articulos = mis_productos.count()
     
-    valor_total = mis_productos.aggregate(Sum('precio'))['precio__sum'] or 0
+    resultado = mis_productos.annotate(
+        valor_por_producto=F('precio') * F('stock')
+    ).aggregate(
+        valor_total=Sum('valor_por_producto')
+    )
+    
+    valor_total = resultado['valor_total'] or 0
     
     alertas = mis_productos.filter(stock__lt=10).count()
 
