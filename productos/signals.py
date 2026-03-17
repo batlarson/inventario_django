@@ -1,0 +1,10 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from .models import Producto, Historial
+
+@receiver(post_save, sender=Producto)
+def registrar_creacion_producto(sender, instance, created, **kwargs):
+    if created:
+        Historial.objects.create(
+            accion=f"Se ha creado un nuevo producto: {instance.nombre}"
+        )

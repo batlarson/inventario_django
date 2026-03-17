@@ -18,3 +18,11 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class Historial(models.Model):
+    usuario = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+    accion = models.CharField(max_length=200)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.fecha} - {self.accion}"

@@ -1,5 +1,6 @@
 from django import forms
 from .models import Producto
+import re
 
 class ProductoForm(forms.ModelForm):
     class Meta:
@@ -14,6 +15,11 @@ class ProductoForm(forms.ModelForm):
     
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
+
         if len(nombre) < 3:
             raise forms.ValidationError("El nombre es demasiado corto, pon algo más descriptivo.")
+        
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
+            raise forms.ValidationError("El nombre solo puede contener letras, números y espacios. ¡Nada de símbolos extraños!")
+        
         return nombre

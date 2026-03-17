@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Count, Sum, F
-from .models import Producto, Categoria
+from .models import Producto, Categoria, Historial
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 
@@ -93,7 +93,12 @@ def eliminar_producto(request, id_producto):
     producto = get_object_or_404(Producto, id=id_producto)
     
     if request.method == 'POST':
+        nombre_eliminado = producto.nombre
         producto.delete()
+        Historial.objects.create(
+            usuario=request.user,
+            accion=f"ELIMINADO: {request.user.username} borró el producto '{nombre_eliminado}'"
+        )
         messages.success(request, f'El producto "{producto.nombre}" ha sido eliminado correctamente.')
         return redirect('listado')
 
