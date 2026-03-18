@@ -22,10 +22,13 @@ def bienvenida(request):
     
     alertas = mis_productos.filter(stock__lt=10).count()
 
+    recientes = Historial.objects.all().order_by('-fecha')[:5]
+
     contexto = {
         'total': total_articulos,
         'valor': valor_total,
         'alertas': alertas,
+        'recientes': recientes,
     }
     return render(request, 'productos/bienvenida.html', contexto)
 
@@ -82,6 +85,10 @@ def editar_producto(request, id_producto):
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
+            Historial.objects.create(
+                usuario=request.user,
+                accion=f"EDITADO: {request.user.username} modificó '{producto.nombre}'"
+            )
             return redirect('listado')
     else:
         form = ProductoForm(instance=producto)

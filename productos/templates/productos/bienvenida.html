@@ -23,6 +23,20 @@
 
 </div>
 
+<div style="margin-top: 40px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <h3>🕒 Actividad Reciente</h3>
+    <ul style="list-style: none; padding: 0;">
+        {% for h in recientes %}
+            <li style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.9em;">
+                <strong>{{ h.fecha|date:"H:i" }}</strong> - {{ h.accion }} 
+                {% if h.usuario %}<span style="color: #666;">(por {{ h.usuario.username }})</span>{% endif %}
+            </li>
+        {% empty %}
+            <li>Aún no hay actividad registrada.</li>
+        {% endfor %}
+    </ul>
+</div>
+
 <div style="margin-top: 40px;">
     <a href="{% url 'listado' %}" style="padding: 15px 25px; background: #333; color: white; text-decoration: none; border-radius: 5px;">
         Gestionar Inventario →
