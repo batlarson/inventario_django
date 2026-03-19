@@ -7,6 +7,19 @@ from .models import Producto, Categoria, Historial
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 
+from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.response import Response
+from .serializers import ProductoSerializer
+
+@api_view(['GET'])
+def producto_api_list(request):
+    # Solo queremos los productos del usuario que está logueado
+    productos = Producto.objects.filter(usuario=request.user)
+    # El serializer convierte los objetos de la BD a JSON
+    serializer = ProductoSerializer(productos, many=True)
+    return Response(serializer.data)
+
 def bienvenida(request):
     mis_productos = Producto.objects.filter(usuario=request.user)
     
@@ -110,3 +123,20 @@ def eliminar_producto(request, id_producto):
         return redirect('listado')
 
     return render(request, 'productos/confirmar_eliminar.html', {'producto': producto})
+
+
+@api_view(['GET', 'POST'])
+def producto_api_list(request):
+    if request.method == 'GET':
+        productos = Producto.objects.filter(usuario=request.user)
+        serializer = ProductoSerializer(productos, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = ProductoSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(usuario=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
