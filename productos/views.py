@@ -7,10 +7,11 @@ from .models import Producto, Categoria, Historial
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import ProductoSerializer
+from .serializers import ProductoSerializer, CategoriaSerializer
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])
 def producto_api_list(request):
@@ -126,9 +127,15 @@ def eliminar_producto(request, id_producto):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def producto_api_list(request):
     if request.method == 'GET':
         productos = Producto.objects.filter(usuario=request.user)
+
+        categoria_id = request.query_params.get('cat')
+        if categoria_id:
+            productos = productos.filter(categoria_id=categoria_id)
+
         serializer = ProductoSerializer(productos, many=True)
         return Response(serializer.data)
 
@@ -140,3 +147,11 @@ def producto_api_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def categoria_api_list(request):
+    categorias = Categoria.objects.all()
+    serializer = CategoriaSerializer(categorias, many=True)
+    return Response(serializer.data)
