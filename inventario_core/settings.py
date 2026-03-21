@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     "productos",
 ]
 
@@ -122,3 +123,7 @@ LOGIN_URL = 'login'
 
 LOGIN_REDIRECT_URL = 'listado'
 LOGOUT_REDIRECT_URL = 'login'   
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
