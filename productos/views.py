@@ -13,11 +13,12 @@ from rest_framework.response import Response
 from .serializers import ProductoSerializer, CategoriaSerializer
 from rest_framework.permissions import IsAuthenticated
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+
 @api_view(['GET'])
 def producto_api_list(request):
-    # Solo queremos los productos del usuario que está logueado
     productos = Producto.objects.filter(usuario=request.user)
-    # El serializer convierte los objetos de la BD a JSON
     serializer = ProductoSerializer(productos, many=True)
     return Response(serializer.data)
 
@@ -126,6 +127,17 @@ def eliminar_producto(request, id_producto):
     return render(request, 'productos/confirmar_eliminar.html', {'producto': producto})
 
 
+@extend_schema(
+    responses=ProductoSerializer,
+    parameters=[
+        OpenApiParameter(
+            name='cat', 
+            description='Filtrar productos por el ID de la categoría', 
+            required=False, 
+            type=OpenApiTypes.INT
+        ),
+    ]
+)
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def producto_api_list(request):
@@ -147,8 +159,31 @@ def producto_api_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
+
+@extend_schema(responses=ProductoSerializer)
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def producto_api_detail(request, pk):
+    producto = get_object_or_404(Producto, pk=pk, usuario=request.user)
+
+    if request.method == 'GET':
+        serializer = ProductoSerializer(producto)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ProductoSerializer(producto, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        producto.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(responses=CategoriaSerializer)
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def categoria_api_list(request):
