@@ -5,7 +5,7 @@ import re
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'stock', 'precio', 'perecedero', 'categoria']
+        fields = ['nombre', 'stock', 'precio', 'perecedero', 'categoria', 'imagen']
     
     def clean_precio(self):
         precio = self.cleaned_data.get('precio')

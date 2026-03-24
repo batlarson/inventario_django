@@ -2,7 +2,7 @@
 
 {% block contenido %}
     <h1>{% if editando %}Editar{% else %}Añadir{% endif %} Producto</h1>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {% if form.errors %}
         <div style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 20px;">

@@ -82,7 +82,7 @@ def listado_productos(request):
 @login_required
 def crear_producto(request):
     if request.method == 'POST':
-        form = ProductoForm(request.POST)
+        form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
             producto = form.save(commit=False)
             producto.usuario = request.user
@@ -97,7 +97,7 @@ def editar_producto(request, id_producto):
     producto = get_object_or_404(Producto, id=id_producto)
     
     if request.method == 'POST':
-        form = ProductoForm(request.POST, instance=producto)
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
         if form.is_valid():
             form.save()
             Historial.objects.create(
