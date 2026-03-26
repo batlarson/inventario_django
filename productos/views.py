@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Count, Sum, F
 from .models import Producto, Categoria, Historial
-from .forms import ProductoForm
+from .forms import ProductoForm, PerfilForm
 from .ia_logic import predecir_reabastecimiento
 
 from rest_framework.decorators import api_view, permission_classes
@@ -127,7 +127,20 @@ def eliminar_producto(request, id_producto):
     return render(request, 'productos/confirmar_eliminar.html', {'producto': producto})
 
 
+def editar_perfil(request):
+    perfil = request.user.perfil
+    if request.method == 'POST':
+        form = PerfilForm(request.POST, request.FILES, instance=perfil)
+        if form.is_valid():
+            form.save()
+            return redirect('perfil')
+    else:
+        form = PerfilForm(instance=perfil)
+    return render(request, 'productos/editar_perfil.html', {'form': form})
+
+
 @extend_schema(
+    methods=['GET'],
     responses=ProductoSerializer,
     parameters=[
         OpenApiParameter(
@@ -137,6 +150,11 @@ def eliminar_producto(request, id_producto):
             type=OpenApiTypes.INT
         ),
     ]
+)
+@extend_schema(
+    methods=['POST'],
+    request=ProductoSerializer,
+    responses=ProductoSerializer
 )
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -183,10 +201,19 @@ def producto_api_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@extend_schema(responses=CategoriaSerializer)
+@extend_schema(
+    methods=['GET'],
+    responses=CategoriaSerializer,
+)
+@extend_schema(
+    methods=['POST'],
+    request=CategoriaSerializer,
+    responses=CategoriaSerializer
+)
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def categoria_api_list(request):
     categorias = Categoria.objects.all()
     serializer = CategoriaSerializer(categorias, many=True)
     return Response(serializer.data)
+

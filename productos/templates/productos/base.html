@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -28,6 +29,11 @@
         <a href="{% url 'crear' %}">➕ Nuevo Producto</a>
         {% if user.is_authenticated %}
             <span style="color: white; margin-left: 20px;">Hola, {{ user.username }}</span>
+                {% if user.perfil.avatar %}
+                    <img src="{{ user.perfil.avatar.url }}" class="nav-avatar" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px;">
+                {% else %}
+                    <img src="{% static 'img/default_avatar.png' %}" class="nav-avatar" alt="Sin foto" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px;">
+                {% endif %}            
             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" style="background: none; border: none; color: #ff4d4d; cursor: pointer; margin-left: 10px;">

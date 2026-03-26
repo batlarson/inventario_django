@@ -1,5 +1,5 @@
 from django import forms
-from .models import Producto
+from .models import Producto, Perfil
 import re
 
 class ProductoForm(forms.ModelForm):
@@ -23,3 +23,8 @@ class ProductoForm(forms.ModelForm):
             raise forms.ValidationError("El nombre solo puede contener letras, números y espacios. ¡Nada de símbolos extraños!")
         
         return nombre
+
+class PerfilForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ['avatar']
