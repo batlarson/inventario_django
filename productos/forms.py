@@ -1,5 +1,5 @@
 from django import forms
-from .models import Producto, Perfil
+from .models import Producto
 import re
 
 class ProductoForm(forms.ModelForm):
@@ -24,7 +24,3 @@ class ProductoForm(forms.ModelForm):
         
         return nombre
 
-class PerfilForm(forms.ModelForm):
-    class Meta:
-        model = Perfil
-        fields = ['avatar']

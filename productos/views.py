@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Count, Sum, F
 from .models import Producto, Categoria, Historial
-from .forms import ProductoForm, PerfilForm
+from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 
 from rest_framework.decorators import api_view, permission_classes
@@ -125,18 +125,6 @@ def eliminar_producto(request, id_producto):
         return redirect('listado')
 
     return render(request, 'productos/confirmar_eliminar.html', {'producto': producto})
-
-
-def editar_perfil(request):
-    perfil = request.user.perfil
-    if request.method == 'POST':
-        form = PerfilForm(request.POST, request.FILES, instance=perfil)
-        if form.is_valid():
-            form.save()
-            return redirect('perfil')
-    else:
-        form = PerfilForm(instance=perfil)
-    return render(request, 'productos/editar_perfil.html', {'form': form})
 
 
 @extend_schema(
