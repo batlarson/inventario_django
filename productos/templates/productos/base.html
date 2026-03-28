@@ -28,7 +28,9 @@
         <a href="{% url 'listado' %}">📋 Inventario</a>
         <a href="{% url 'crear' %}">➕ Nuevo Producto</a>
         {% if user.is_authenticated %}
-            <span style="color: white; margin-left: 20px;">Hola, {{ user.username }}</span>
+            <span style="color: white; margin-left: 20px;">
+                <a href="{% url 'perfil' %}">Hola, {{ user.username }}</a>
+            </span>
                 {% if user.perfil.avatar %}
                     <img src="{{ user.perfil.avatar.url }}" class="nav-avatar" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px;">
                 {% else %}

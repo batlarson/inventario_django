@@ -1,5 +1,22 @@
+{% extends 'productos/base.html' %}
+
+{% block contenido %}
+<h2>Configuración de Perfil</h2>
+
+<div style="margin-bottom: 20px;">
+    <p>Avatar actual:</p>
+    {% if user.perfil.avatar %}
+        <img src="{{ user.perfil.avatar.url }}" style="width: 150px; border-radius: 10px;">
+    {% endif %}
+</div>
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Actualizar Foto</button>
+    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        Guardar Cambios
+    </button>
 </form>
+
+<p><a href="{% url 'bienvenida' %}">Cancelar y volver</a></p>
+{% endblock %}
