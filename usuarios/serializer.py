@@ -4,11 +4,12 @@ from django.contrib.auth.models import User
 
 class PerfilSerializer(serializers.ModelSerializer):
     usuario_nombre = serializers.ReadOnlyField(source='usuario.username')
+    usuario_fecha = serializers.DateTimeField(source='usuario.date_joined', read_only=True)
 
     class Meta:
         model = Perfil
-        fields = ['usuario', 'usuario_nombre', 'avatar', 'telefono']
-        read_only_fields = ['usuario', 'usuario_nombre']
+        fields = ['usuario', 'usuario_nombre', 'usuario_fecha', 'avatar', 'telefono']
+        read_only_fields = ['usuario', 'usuario_nombre', 'usuario_fecha']
 
         def validate_avatar(self, value):
             if value:
