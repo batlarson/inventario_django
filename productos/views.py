@@ -16,12 +16,9 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 
-@api_view(['GET'])
-def producto_api_list(request):
-    productos = Producto.objects.filter(usuario=request.user)
-    serializer = ProductoSerializer(productos, many=True)
-    return Response(serializer.data)
 
+
+@login_required
 def bienvenida(request):
     mis_productos = Producto.objects.filter(usuario=request.user)
     
@@ -93,8 +90,8 @@ def crear_producto(request):
     return render(request, 'productos/crear.html', {'form': form})
 
 @login_required
-def editar_producto(request, id_producto):
-    producto = get_object_or_404(Producto, id=id_producto)
+def editar_producto(request, id_producto,):
+    producto = get_object_or_404(Producto, id=id_producto, usuario=request.user)
     
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES, instance=producto)
@@ -112,7 +109,7 @@ def editar_producto(request, id_producto):
 
 @login_required
 def eliminar_producto(request, id_producto):
-    producto = get_object_or_404(Producto, id=id_producto)
+    producto = get_object_or_404(Producto, id=id_producto, usuario=request.user)
     
     if request.method == 'POST':
         nombre_eliminado = producto.nombre
@@ -121,7 +118,7 @@ def eliminar_producto(request, id_producto):
             usuario=request.user,
             accion=f"ELIMINADO: {request.user.username} borró el producto '{nombre_eliminado}'"
         )
-        messages.success(request, f'El producto "{producto.nombre}" ha sido eliminado correctamente.')
+        messages.success(request, f'El producto "{nombre_eliminado}" ha sido eliminado correctamente.')
         return redirect('listado')
 
     return render(request, 'productos/confirmar_eliminar.html', {'producto': producto})

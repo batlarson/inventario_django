@@ -11,9 +11,9 @@ class PerfilSerializer(serializers.ModelSerializer):
         fields = ['usuario', 'usuario_nombre', 'usuario_fecha', 'avatar', 'telefono']
         read_only_fields = ['usuario', 'usuario_nombre', 'usuario_fecha']
 
-        def validate_avatar(self, value):
-            if value:
-                limit_mb = 2
-                if value.size > limit_mb * 1024 * 1024:
-                    raise serializers.ValidationError(f"La imagen es demasiado grande. Máximo {limit_mb}MB.")
-            return value
+    def validate_avatar(self, value):
+        if value:
+            limit_mb = 2
+            if value.size > limit_mb * 1024 * 1024:
+                raise serializers.ValidationError(f"La imagen es demasiado grande. Máximo {limit_mb}MB.")
+        return value

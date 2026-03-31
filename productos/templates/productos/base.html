@@ -31,7 +31,7 @@
             <span style="color: white; margin-left: 20px;">
                 <a href="{% url 'perfil' %}">Hola, {{ user.username }}</a>
             </span>
-                {% if user.perfil.avatar %}
+                {% if user.perfil and user.perfil.avatar %}
                     <img src="{{ user.perfil.avatar.url }}" class="nav-avatar" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px;">
                 {% else %}
                     <img src="{% static 'img/default_avatar.png' %}" class="nav-avatar" alt="Sin foto" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px;">
