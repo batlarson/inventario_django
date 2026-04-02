@@ -19,7 +19,7 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
-    perfil = models.ForeignKey('usuarios.Perfil', on_delete=models.CASCADE)
+    #perfil = models.ForeignKey('usuarios.Perfil', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nombre

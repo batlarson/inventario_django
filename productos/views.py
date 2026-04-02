@@ -46,7 +46,7 @@ def bienvenida(request):
 
 @login_required
 def listado_productos(request):
-    productos = Producto.objects.filter(usuario=request.user)
+    productos = Producto.objects.filter(usuario=request.user).select_related('categoria').all()
     categorias = Categoria.objects.all()
 
     conteo_categorias = productos.values('categoria__nombre').annotate(total=Count('id'))
