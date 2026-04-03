@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  # Definimos nuestro primer servicio: la aplicación web (Django)
+  web:
+    build: .  # Le dice a Docker: "Busca el Dockerfile en esta misma carpeta y constrúyelo"
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app  # ¡MAGIA! Esto sincroniza tu código. Si cambias algo en VS Code, se cambia en el contenedor.
+    ports:
+      - "8000:8000"  # Conecta el puerto 8000 de tu Windows con el 8000 del contenedor
+    env_file:
+      - .env  # Le pasa todas tus contraseñas seguras al contenedor
