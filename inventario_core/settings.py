@@ -141,4 +141,11 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / "media"
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Gestor de Inventario Inteligente API',
+    'DESCRIPTION': 'Documentación interactiva de la API para la gestión de productos y stock.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
