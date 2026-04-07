@@ -137,6 +137,17 @@ LOGOUT_REDIRECT_URL = 'login'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
+    # 🛡️ Cerraduras de la API
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # Para usar el login de Django
+        'rest_framework.authentication.TokenAuthentication',    # Para aplicaciones externas
+    ],
+    
+    # 🧱 Política de permisos por defecto (Cerrado por defecto)
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated', # Solo usuarios logueados pueden entrar
+    ],
 }
 
 MEDIA_URL = '/media/'
@@ -148,4 +159,12 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentación interactiva de la API para la gestión de productos y stock.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+
+    # ✨ Esto añade el botón "Authorize" arriba a la derecha
+    'COMPONENT_SPLIT_PATCH': True,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,  # Para que no se borre el login al refrescar
+        'displayOperationId': True,
+    },
 }

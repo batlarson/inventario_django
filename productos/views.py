@@ -6,6 +6,7 @@ from django.db.models import Count, Sum, F
 from .models import Producto, Categoria, Historial
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
+from .permissions import IsAdminOrReadOnly
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
@@ -142,7 +143,7 @@ def eliminar_producto(request, id_producto):
     responses=ProductoSerializer
 )
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrReadOnly])
 def producto_api_list(request):
     if request.method == 'GET':
         productos = Producto.objects.filter(usuario=request.user)
@@ -166,7 +167,7 @@ def producto_api_list(request):
 
 @extend_schema(responses=ProductoSerializer)
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrReadOnly])
 def producto_api_detail(request, pk):
     producto = get_object_or_404(Producto, pk=pk, usuario=request.user)
 
@@ -196,7 +197,7 @@ def producto_api_detail(request, pk):
     responses=CategoriaSerializer
 )
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrReadOnly])
 def categoria_api_list(request):
     categorias = Categoria.objects.all()
     serializer = CategoriaSerializer(categorias, many=True)
