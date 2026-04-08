@@ -6,7 +6,7 @@ from django.db.models import Count, Sum, F
 from .models import Producto, Categoria, Historial
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
@@ -165,7 +165,19 @@ def producto_api_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@extend_schema(responses=ProductoSerializer)
+@extend_schema(
+    methods=['GET'],
+    responses={200: ProductoSerializer}
+)
+@extend_schema(
+    methods=['PUT'],
+    request=ProductoSerializer,
+    responses={200: ProductoSerializer, 400: OpenApiTypes.OBJECT, 403: OpenApiTypes.OBJECT}
+)
+@extend_schema(
+    methods=['DELETE'],
+    responses={204: None, 404: OpenApiTypes.OBJECT, 403: OpenApiTypes.OBJECT}
+)
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAdminOrReadOnly])
 def producto_api_detail(request, pk):
@@ -194,7 +206,10 @@ def producto_api_detail(request, pk):
 @extend_schema(
     methods=['POST'],
     request=CategoriaSerializer,
-    responses=CategoriaSerializer
+    responses={
+        201: CategoriaSerializer,
+        403: OpenApiTypes.OBJECT,
+    }
 )
 @api_view(['GET', 'POST'])
 @permission_classes([IsAdminOrReadOnly])
