@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/listado/', views.producto_api_list, name='api_listado'),
     path('api/producto/<int:pk>/', views.producto_api_detail, name='api_detalle'),
     path('api/categorias/', views.categoria_api_list, name='api_categorias'),
+    path('api/recomendaciones/', views.recomendaciones_ia, name='api-recomendaciones'),
 ]

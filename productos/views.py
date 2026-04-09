@@ -218,3 +218,31 @@ def categoria_api_list(request):
     serializer = CategoriaSerializer(categorias, many=True)
     return Response(serializer.data)
 
+
+@extend_schema(
+    summary="Obtener recomendaciones de reabastecimiento",
+    description="Devuelve solo los productos que la IA considera en estado CRÍTICO o RECOMENDADO.",
+    responses={200: ProductoSerializer(many=True)}
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) # Cualquier usuario logueado puede ver qué falta
+def recomendaciones_ia(request):
+    # 1. Traemos los productos del usuario
+    todos_los_productos = Producto.objects.filter(usuario=request.user)
+    
+    productos_urgentes = []
+
+    # 2. Pasamos el filtro de la IA
+    for p in todos_los_productos:
+        # Usamos tu nueva función de ia_logic
+        resultado = predecir_reabastecimiento(p.stock, p.precio)
+        
+        # Si la IA dice que es CRÍTICO o RECOMENDADO (lo sabemos por el texto)
+        if "CRÍTICO" in resultado or "RECOMENDADO" in resultado:
+            # Añadimos un campo extra al objeto solo para esta respuesta
+            p.analisis_ia = resultado 
+            productos_urgentes.append(p)
+
+    # 3. Serializamos y enviamos
+    serializer = ProductoSerializer(productos_urgentes, many=True)
+    return Response(serializer.data)
