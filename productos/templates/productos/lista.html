@@ -41,7 +41,7 @@
                         <strong>{{ p.nombre }}</strong> ({{ p.categoria.nombre|default:"Sin categoría" }}) 
                         - Stock: <strong>{{ p.stock }}</strong> | {{ p.precio }}€
                         <br>
-                        <small>🤖 Sugerencia IA: {{ p.prediccion }}</small>
+                        <small style="border-radius: 4px;">🤖 Sugerencia IA: {{ p.prediccion }}</small>
                     </div>
                 </li>
                 {% empty %}
