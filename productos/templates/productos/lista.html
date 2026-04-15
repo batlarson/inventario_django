@@ -71,6 +71,7 @@
     <br>
     <a href="{% url 'crear' %}">➕ Añadir nuevo producto</a> |
     <a href="{% url 'bienvenida' %}">🏠 Inicio</a>
+    <a href="{% url 'exportar_pdf' %}" style="background-color: #333; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-size: 14px; display: inline-block; margin-bottom: 20px;">📄 Descargar Informe IA (PDF)</a>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{ labels|json_script:"labels-data" }}

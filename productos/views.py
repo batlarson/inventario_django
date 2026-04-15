@@ -17,6 +17,9 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+
 
 
 @login_required
@@ -246,3 +249,51 @@ def recomendaciones_ia(request):
     # 3. Serializamos y enviamos
     serializer = ProductoSerializer(productos_urgentes, many=True)
     return Response(serializer.data)
+
+def exportar_pdf_ia(request):
+    # Crear la respuesta con tipo de contenido PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Informe_Critico_IA.pdf"'
+
+    # Crear el objeto PDF
+    p = canvas.Canvas(response, pagesize=A4)
+    w, h = A4
+
+    # Título y Cabecera
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(100, h - 50, "🤖 Informe de Inventario Crítico - IA System")
+    
+    p.setFont("Helvetica", 12)
+    p.drawString(100, h - 70, f"Generado para el usuario: {request.user.username}")
+    p.line(100, h - 80, 500, h - 80)
+
+    # Cuerpo del informe
+    y = h - 110
+    productos = Producto.objects.filter(usuario=request.user)
+    
+    p.setFont("Helvetica-Bold", 11)
+    p.drawString(100, y, "Producto")
+    p.drawString(300, y, "Stock")
+    p.drawString(400, y, "Estado IA")
+    y -= 20
+
+    p.setFont("Helvetica", 10)
+    for prod in productos:
+        analisis = predecir_reabastecimiento(prod.stock, prod.precio)
+        
+        # Solo incluimos los que necesitan atención (Crítico o Recomendado)
+        if "CRÍTICO" in analisis or "RECOMENDADO" in analisis:
+            p.drawString(100, y, f"{prod.nombre}")
+            p.drawString(300, y, f"{prod.stock} unidades")
+            p.drawString(400, y, f"{analisis.split(':')[0]}") # Solo el tag
+            y -= 15
+            
+            # Si nos quedamos sin espacio en la hoja
+            if y < 50:
+                p.showPage()
+                y = h - 50
+
+    # Finalizar el PDF
+    p.showPage()
+    p.save()
+    return response
