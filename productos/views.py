@@ -283,9 +283,17 @@ def exportar_pdf_ia(request):
         
         # Solo incluimos los que necesitan atención (Crítico o Recomendado)
         if "CRÍTICO" in analisis or "RECOMENDADO" in analisis:
+            if "CRÍTICO" in analisis:
+                p.setFillColorRGB(0.8, 0, 0) # Un rojo un poco más elegante
+            else:
+                p.setFillColorRGB(0.9, 0.5, 0) # Naranja para RECOMENDADO
+
             p.drawString(100, y, f"{prod.nombre}")
             p.drawString(300, y, f"{prod.stock} unidades")
             p.drawString(400, y, f"{analisis.split(':')[0]}") # Solo el tag
+
+            p.setFillColorRGB(0, 0, 0) # Limpiamos el pincel volviendo al NEGRO
+
             y -= 15
             
             # Si nos quedamos sin espacio en la hoja
