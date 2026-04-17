@@ -28,26 +28,23 @@ class Producto(models.Model):
 @receiver(post_delete, sender=Producto)
 def borrar_imagen_post_delete(sender, instance, **kwargs):
     if instance.imagen:
-        if os.path.isfile(instance.imagen.path):
-            os.remove(instance.imagen.path)
 
-# 2. Borrar archivo antiguo cuando se cambia por uno nuevo (Edit)
+        if instance.imagen.storage.exists(instance.imagen.name):
+            instance.imagen.storage.delete(instance.imagen.name)
+
 @receiver(pre_save, sender=Producto)
 def borrar_imagen_al_cambiar(sender, instance, **kwargs):
     if not instance.pk:
-        return False
+        return
 
     try:
         viejo_producto = Producto.objects.get(pk=instance.pk)
     except Producto.DoesNotExist:
-        return False
-
-    nueva_imagen = instance.imagen
-    vieja_imagen = viejo_producto.imagen
-
-    if vieja_imagen and vieja_imagen != nueva_imagen:
-        if os.path.isfile(vieja_imagen.path):
-            os.remove(vieja_imagen.path)
+        return
+    
+    if viejo_producto.imagen and viejo_producto.imagen.name != instance.imagen.name:
+        if viejo_producto.imagen.storage.exists(viejo_producto.imagen.name):
+            viejo_producto.imagen.storage.delete(viejo_producto.imagen.name)
     
 class Historial(models.Model):
     usuario = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
