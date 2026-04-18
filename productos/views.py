@@ -173,7 +173,7 @@ def producto_api_list(request):
     responses={200: ProductoSerializer}
 )
 @extend_schema(
-    methods=['PUT'],
+    methods=['PUT', 'PATCH'],
     request=ProductoSerializer,
     responses={200: ProductoSerializer, 400: OpenApiTypes.OBJECT, 403: OpenApiTypes.OBJECT}
 )
@@ -181,7 +181,7 @@ def producto_api_list(request):
     methods=['DELETE'],
     responses={204: None, 404: OpenApiTypes.OBJECT, 403: OpenApiTypes.OBJECT}
 )
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'PATCH' 'DELETE'])
 @permission_classes([IsAdminOrReadOnly])
 def producto_api_detail(request, pk):
     producto = get_object_or_404(Producto, pk=pk, usuario=request.user)
@@ -194,6 +194,14 @@ def producto_api_detail(request, pk):
         serializer = ProductoSerializer(producto, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'PATCH':
+        # partial=True: permite guardar aunque solo enviemos el "stock"
+        serializer = ProductoSerializer(producto, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save() # Esto dispara la IA automáticamente
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -38,8 +38,11 @@
                         <a href="{% url 'editar' p.id %}">✏️ Editar</a> |
                         <a href="{% url 'eliminar' p.id %}" style="color: red;">🗑️ Borrar</a>
                         <br>
-                        <strong>{{ p.nombre }}</strong> ({{ p.categoria.nombre|default:"Sin categoría" }}) 
-                        - Stock: <strong>{{ p.stock }}</strong> | {{ p.precio }}€
+                        <strong>{{ p.nombre }}</strong> ({{ p.categoria.nombre|default:"Sin categoría" }})
+                        - Stock: <strong id="stock-{{ p.id }}">{{ p.stock }}</strong> | {{ p.precio }}€
+                        <button data-producto-id="{{ p.id }}" style="margin-left: 10px; background: #2ecc71; color: white; border: none; padding: 3px 10px; border-radius: 4px; cursor: pointer;">
+                            💸 Venta Rápida
+                        </button>
                         <br>
                         <small style="border-radius: 4px;">🤖 Sugerencia IA: {{ p.prediccion }}</small>
                     </div>
@@ -105,4 +108,57 @@
 
 {% block pie %}
     <p>Estás viendo el inventario de la planta de Álava.</p>
+
+
+<script>
+function venderRapido(productoId) {
+    alert("¡El botón funciona! El ID es: " + productoId);
+    const csrftoken = "{{ csrf_token }}";
+    const stockActual = parseInt(document.getElementById(`stock-${productoId}`).innerText);
+
+    if (stockActual <= 0) {
+        alert("¡No hay stock disponible para vender!");
+        return;
+    }
+
+    fetch(`/api/producto/${productoId}/`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({
+            stock: stockActual - 1
+        })
+    })
+    .then(response => {
+        if (response.ok) return response.json();
+        throw new Error('Error en la venta');
+    })
+    .then(data => {
+        // Actualizamos la pantalla sin recargar
+        document.getElementById(`stock-${productoId}`).innerText = data.stock;
+
+        // Actualizamos la IA si el Serializer la devuelve
+        if (data.prediccion) {
+            document.getElementById(`ia-${productoId}`).innerText = `🤖 Sugerencia IA: ${data.prediccion}`;
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Hubo un problema al conectar con el servidor.");
+    });
+}
+
+// Attach event listeners to buttons with data-producto-id
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('button[data-producto-id]').forEach(button => {
+        button.addEventListener('click', () => {
+            const productoId = button.getAttribute('data-producto-id');
+            venderRapido(productoId);
+        });
+    });
+});
+</script>
+
 {% endblock %}
