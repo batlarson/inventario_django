@@ -112,41 +112,33 @@
 
 <script>
 function venderRapido(productoId) {
-    alert("¡El botón funciona! El ID es: " + productoId);
     const csrftoken = "{{ csrf_token }}";
-    const stockActual = parseInt(document.getElementById(`stock-${productoId}`).innerText);
+    const stockElemento = document.getElementById(`stock-${productoId}`);
+    const stockActual = parseInt(stockElemento.innerText);
 
-    if (stockActual <= 0) {
-        alert("¡No hay stock disponible para vender!");
-        return;
-    }
-
-    fetch(`/api/producto/${productoId}/`, {
+    fetch(`/productos/api/producto/${productoId}/`, { 
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken,
         },
-        body: JSON.stringify({
-            stock: stockActual - 1
-        })
+        body: JSON.stringify({ stock: stockActual - 1 })
     })
-    .then(response => {
-        if (response.ok) return response.json();
-        throw new Error('Error en la venta');
-    })
-    .then(data => {
-        // Actualizamos la pantalla sin recargar
-        document.getElementById(`stock-${productoId}`).innerText = data.stock;
-
-        // Actualizamos la IA si el Serializer la devuelve
-        if (data.prediccion) {
-            document.getElementById(`ia-${productoId}`).innerText = `🤖 Sugerencia IA: ${data.prediccion}`;
+    .then(async response => {
+        const data = await response.json();
+        if (response.ok) {
+            stockElemento.innerText = data.stock;
+            const iaElemento = document.getElementById(`ia-${productoId}`);
+            if (iaElemento && data.prediccion) {
+                iaElemento.innerText = `🤖 Sugerencia IA: ${data.prediccion}`;
+            }
+        } else {
+            console.error("Error del servidor:", data);
+            alert("Error: " + JSON.stringify(data));
         }
     })
     .catch(error => {
-        console.error("Error:", error);
-        alert("Hubo un problema al conectar con el servidor.");
+        console.error("Error de conexión:", error);
     });
 }
 

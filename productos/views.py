@@ -181,10 +181,13 @@ def producto_api_list(request):
     methods=['DELETE'],
     responses={204: None, 404: OpenApiTypes.OBJECT, 403: OpenApiTypes.OBJECT}
 )
-@api_view(['GET', 'PUT', 'PATCH' 'DELETE'])
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([IsAdminOrReadOnly])
 def producto_api_detail(request, pk):
-    producto = get_object_or_404(Producto, pk=pk, usuario=request.user)
+    producto = get_object_or_404(Producto, pk=pk)
+
+    if producto.usuario != request.user and not request.user.is_staff:
+        return Response({'error': 'No tienes permiso'}, status=status.HTTP_403_FORBIDDEN)
 
     if request.method == 'GET':
         serializer = ProductoSerializer(producto)
