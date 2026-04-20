@@ -24,3 +24,8 @@ def vigilar_stock_ia(sender, instance, **kwargs):
             accion=f"🤖 IA-SYSTEM: Alerta crítica en '{instance.nombre}'. Razón: {analisis}"
         )
         print(f"⚠️ Alerta de IA generada para {instance.nombre}")
+
+@receiver(post_save, sender=Producto)
+def avisar_stock_bajo(sender, instance, created, **kwargs):
+    if instance.stock < 5:
+        print(f"⚠️ ¡ALERTA! El producto {instance.nombre} se está agotando. Stock: {instance.stock}")

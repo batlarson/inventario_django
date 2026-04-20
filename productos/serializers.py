@@ -10,6 +10,11 @@ class ProductoSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre', 'stock', 'precio', 'categoria', 'categoria_nombre', "imagen", 'analisis_ia']
         read_only_fields = ['id', 'categoria_nombre', 'analisis_ia']
 
+    def validate_stock(self, value):
+        if value < 0:
+            raise serializers.ValidationError("¡Ey! El stock no puede ser negativo.")
+        return value
+
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria

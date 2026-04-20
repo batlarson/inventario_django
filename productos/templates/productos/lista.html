@@ -128,6 +128,15 @@ function venderRapido(productoId) {
         const data = await response.json();
         if (response.ok) {
             stockElemento.innerText = data.stock;
+            if (data.stock === 0) {
+                const boton = document.querySelector(`button[onclick="venderRapido(${productoId})"]`);
+                if (boton) {
+                    boton.disabled = true;
+                    boton.innerText = "❌ Agotado";
+                    boton.style.background = "#95a5a6";
+                    boton.style.cursor = "not-allowed";
+                }
+            }
             const iaElemento = document.getElementById(`ia-${productoId}`);
             if (iaElemento && data.prediccion) {
                 iaElemento.innerText = `🤖 Sugerencia IA: ${data.prediccion}`;
