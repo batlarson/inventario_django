@@ -7,9 +7,9 @@ from .ia_logic import predecir_reabastecimiento
 @receiver(post_save, sender=Producto)
 def registrar_creacion_producto(sender, instance, created, **kwargs):
     if created:
-        Historial.objects.create(
-            accion=f"Se ha creado un nuevo producto: {instance.nombre}"
-        )
+        Historial.objects.create(accion=f"Se ha creado un nuevo producto: {instance.nombre}")
+    else: 
+        Historial.objects.create(accion=f"ACTUALIZADO: El producto '{instance.nombre}' ha cambiado.")
 
 @receiver(post_save, sender=Producto)
 def vigilar_stock_ia(sender, instance, **kwargs):
@@ -29,3 +29,4 @@ def vigilar_stock_ia(sender, instance, **kwargs):
 def avisar_stock_bajo(sender, instance, created, **kwargs):
     if instance.stock < 5:
         print(f"⚠️ ¡ALERTA! El producto {instance.nombre} se está agotando. Stock: {instance.stock}")
+
