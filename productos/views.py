@@ -7,6 +7,8 @@ from .models import Producto, Categoria, Historial
 from .forms import ProductoForm
 from .ia_logic import predecir_reabastecimiento
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from .services import ProductoService
+from django.core.exceptions import ValidationError
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
@@ -182,7 +184,7 @@ def producto_api_list(request):
     responses={204: None, 404: OpenApiTypes.OBJECT, 403: OpenApiTypes.OBJECT}
 )
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
-@permission_classes([IsAdminOrReadOnly])
+@permission_classes([IsAuthenticated])
 def producto_api_detail(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
 
@@ -201,12 +203,23 @@ def producto_api_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'PATCH':
-        # partial=True: permite guardar aunque solo enviemos el "stock"
-        serializer = ProductoSerializer(producto, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save() # Esto dispara la IA automáticamente
+        try:
+            # 1. El Servicio hace todo el trabajo duro y seguro
+            producto = ProductoService.vender_producto(pk) 
+            
+            # 2. El Serializer ahora solo sirve para "traducir" el producto a JSON y enviarlo al frontend
+            serializer = ProductoSerializer(producto)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+        except ValidationError as e: # Capturamos el error específico del Servicio
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            # //partial=True: permite guardar aunque solo enviemos el "stock"
+            # serializer = ProductoSerializer(producto, data=request.data, partial=True)
+        #     if serializer.is_valid():
+        #         serializer.save() # Esto dispara la IA automáticamente
+        #         return Response(serializer.data)
+        # except:
+        #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         producto.delete()
