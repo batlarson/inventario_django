@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db.models import F
 from .models import Producto
 
 class ProductoService:
@@ -15,3 +16,14 @@ class ProductoService:
         producto.save()
         
         return producto
+    
+    @staticmethod
+    def aplicar_inflacion_masiva(porcentaje=10):
+        """
+        Aumenta el precio de todos los productos usando una sola query SQL.
+        """
+        factor = 1 + (porcentaje / 100.0) # Si es 10, el factor es 1.10
+        
+        # Procesamiento masivo con F()
+        filas_actualizadas = Producto.objects.update(precio=F('precio') * factor)
+        return filas_actualizadas
