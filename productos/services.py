@@ -2,12 +2,16 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import F
 from .models import Producto
+from .tasks import avisar_admin_sin_stock
 
 class ProductoService:
    
     @staticmethod
     def vender_producto(producto_id, cantidad_vendida=1):
-        producto = Producto.objects.get(pk=producto_id)
+        try:
+            producto = Producto.objects.get(pk=producto_id)
+        except Producto.DoesNotExist:
+            raise ValidationError("El producto no existe.")
         
         # Lógica de negocio: No vendemos si no hay stock
         if producto.stock < cantidad_vendida:
@@ -15,6 +19,9 @@ class ProductoService:
         
         producto.stock -= cantidad_vendida
         producto.save()
+
+        if producto.stock == 0:
+            avisar_admin_sin_stock.delay(producto.nombre)
         
         return producto
     
@@ -32,3 +39,6 @@ class ProductoService:
             return filas_actualizadas
         except Exception as e:
             raise Exception(f"Fallo masivo. Se ha cancelado la operación: {e}")
+        
+
+        
