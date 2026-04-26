@@ -15,6 +15,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializers import ProductoSerializer, CategoriaSerializer
 from rest_framework.permissions import IsAuthenticated
+from .services import DashboardService
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
@@ -26,28 +27,10 @@ from reportlab.lib.pagesizes import A4
 
 @login_required
 def bienvenida(request):
-    mis_productos = Producto.objects.filter(usuario=request.user)
+    moneda_elegida = request.GET.get('moneda', 'EUR')
     
-    total_articulos = mis_productos.count()
+    contexto = DashboardService.obtener_estadisticas_usuario(request.user, moneda=moneda_elegida)
     
-    resultado = mis_productos.annotate(
-        valor_por_producto=F('precio') * F('stock')
-    ).aggregate(
-        valor_total=Sum('valor_por_producto')
-    )
-    
-    valor_total = resultado['valor_total'] or 0
-    
-    alertas = mis_productos.filter(stock__lt=10).count()
-
-    recientes = Historial.objects.all().order_by('-fecha')[:5]
-
-    contexto = {
-        'total': total_articulos,
-        'valor': valor_total,
-        'alertas': alertas,
-        'recientes': recientes,
-    }
     return render(request, 'productos/bienvenida.html', contexto)
 
 @login_required

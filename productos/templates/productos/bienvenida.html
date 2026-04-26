@@ -13,7 +13,11 @@
 
     <div style="flex: 1; background: #2ecc71; color: white; padding: 20px; border-radius: 10px; text-align: center;">
         <h3>💰 Valor Total</h3>
-        <p style="font-size: 2em; margin: 0;">{{ valor }}€</p>
+        <p style="font-size: 2em; margin: 0;">{{ valor }} {{ moneda }}</p>
+        <div class="btn-group" style="margin-top: 10px;">
+        <a href="?moneda=EUR" class="btn btn-outline-primary">Ver en Euros</a>
+        <a href="?moneda=USD" class="btn btn-outline-success">Ver en Dólares</a>
+    </div>
     </div>
 
     <div style="flex: 1; background: #e74c3c; color: white; padding: 20px; border-radius: 10px; text-align: center;">
