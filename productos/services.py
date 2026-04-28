@@ -36,6 +36,9 @@ class DashboardService:
             'moneda': moneda
         }
 
+
+logger = logging.getLogger(__name__)
+
 class ProductoService:
    
     @staticmethod
@@ -43,6 +46,7 @@ class ProductoService:
         try:
             producto = Producto.objects.get(pk=producto_id)
         except Producto.DoesNotExist:
+            logger.error(f"Intento de compra fallido: Producto ID {producto_id} no encontrado.")
             raise ValidationError("El producto no existe.")
         
         # Lógica de negocio: No vendemos si no hay stock
@@ -53,8 +57,11 @@ class ProductoService:
         producto.save()
 
         if producto.stock == 0:
+            logger.warning(f"Intento de compra sin stock. Producto: {producto.nombre}")
             avisar_admin_sin_stock.delay(producto.nombre)
         
+        logger.info(f"Venta exitosa: {producto.nombre}. Stock restante: {producto.stock}")
+
         return producto
     
     @staticmethod

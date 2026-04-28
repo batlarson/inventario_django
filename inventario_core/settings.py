@@ -171,3 +171,40 @@ SPECTACULAR_SETTINGS = {
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Lo pondremos en la raíz del proyecto, junto a manage.py
+LOG_FILE_PATH = os.path.join(BASE_DIR, 'tienda_errores.log')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        # Así se verá cada línea del log: [Fecha] [Nivel] [Mensaje]
+        'profesional': {
+            'format': '[{asctime}] {levelname} [{name}]: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        # Esto manda los mensajes a la consola (para cuando programas)
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'profesional',
+        },
+        # Esto es la CAJA NEGRA: guarda en un archivo de texto
+        'file': {
+            'level': 'WARNING', # Solo guarda de WARNING para arriba (Error, Critical)
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILE_PATH,
+            'formatter': 'profesional',
+        },
+    },
+    'loggers': {
+        # Atrapamos todos los logs de nuestra app
+        '': { 
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
