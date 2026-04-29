@@ -257,6 +257,7 @@ def recomendaciones_ia(request):
     serializer = ProductoSerializer(productos_urgentes, many=True)
     return Response(serializer.data)
 
+@login_required
 def exportar_pdf_ia(request):
     # Crear la respuesta con tipo de contenido PDF
     response = HttpResponse(content_type='application/pdf')

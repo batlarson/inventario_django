@@ -11,10 +11,10 @@ class Categoria(models.Model):
         return self.nombre
 
 class Producto(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)   
     stock = models.IntegerField()
-    precio = models.FloatField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
     perecedero = models.BooleanField(default=False)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)

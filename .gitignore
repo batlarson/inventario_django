@@ -5,5 +5,7 @@ db.sqlite3
 .DS_Store
 .venv/
 media/
+tienda_errores.log
+*.log
 .env
 *.env
