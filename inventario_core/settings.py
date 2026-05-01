@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'drf_spectacular',
     "productos",
     "usuarios",
@@ -140,6 +141,7 @@ REST_FRAMEWORK = {
     
     # 🛡️ Cerraduras de la API
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # Para usar el login de Django
         'rest_framework.authentication.TokenAuthentication',    # Para aplicaciones externas
     ],
