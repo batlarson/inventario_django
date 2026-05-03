@@ -51,15 +51,16 @@ def listado_productos(request):
     if nombre_buscar:
         productos = productos.filter(nombre__icontains=nombre_buscar)
 
-    criticos = productos.filter(stock__lt=10)
-    for p in productos:
+    productos_list = list(productos)
+    criticos = [p for p in productos_list if p.stock < 10]
+    for p in productos_list:
         p.prediccion = predecir_reabastecimiento(p.stock, p.precio)
     
     contexto = {
-        'productos': productos,
+        'productos': productos_list,
         'categorias': categorias,
         'criticos': criticos,
-        'cantidad': productos.count(),
+        'cantidad': len(productos_list),
         'labels': labels,
         'data': data,
     }
