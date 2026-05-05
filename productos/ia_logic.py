@@ -9,7 +9,7 @@ def predecir_reabastecimiento(stock, precio):
     
     # 2. Factor de importancia económica (productos caros duelen más si no hay)
     # Normalizamos el precio: productos de más de 500€ se consideran "críticos"
-    factor_importancia = min(1.0, precio / 500)
+    factor_importancia = min(1.0, float(precio) / 500)
     
     # 3. Cálculo de la Puntuación de Prioridad (0.0 a 1.0)
     prioridad = (factor_riesgo * 0.7) + (factor_importancia * 0.3)

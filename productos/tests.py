@@ -52,3 +52,27 @@ class VentaRapidaTests(APITestCase):
         # ¿El servidor nos paró los pies con un 400 Bad Request?
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_usuario_no_ve_productos_ajenos(self):
+        # Usuario B - el intruso
+        usuario_b = User.objects.create_user(
+            username='usuario_b',
+            password='password_456'
+        )
+        # Producto que pertenece a usuario_b
+        Producto.objects.create(
+            nombre='Clavo',
+            precio=1,
+            stock=500,
+            usuario=usuario_b  # ← es de B, no de self.user
+        )
+        
+        # Autenticamos como self.user (usuario A)
+        self.client.force_authenticate(user=self.user)
+        
+        # self.user hace GET — no debería ver el producto de B
+        url = reverse('api_listado')  # sin kwargs, es una lista
+        response = self.client.get(url)
+        
+        # ¿Cuántos productos ve self.user?
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
