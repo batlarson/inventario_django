@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Producto
 
+from unittest.mock import patch
+
 class VentaRapidaTests(APITestCase):
     
     # 1. setUp: Aquí preparamos la "base de datos fantasma"
@@ -76,3 +78,18 @@ class VentaRapidaTests(APITestCase):
         # ¿Cuántos productos ve self.user?
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
+
+    def test_recomendaciones_stock_cero(self):
+        # Ponemos el producto de setUp a stock 0
+        self.producto.stock = 0
+        self.producto.save()
+            
+        with patch('productos.views.predecir_reabastecimiento') as mock_ia:
+            mock_ia.return_value = "CRÍTICO: sin stock"
+                
+            url = reverse('api-recomendaciones')
+            response = self.client.get(url)
+                
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 1)  # el producto crítico aparece
+            self.assertTrue(mock_ia.called)

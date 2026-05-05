@@ -23,3 +23,5 @@ def predecir_reabastecimiento(stock, precio):
         return "ESTABLE: Monitorizar semanalmente."
     else:
         return "OPTIMO: Stock saludable."
+    
+    
