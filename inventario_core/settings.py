@@ -141,7 +141,7 @@ REST_FRAMEWORK = {
     
     # 🛡️ Cerraduras de la API
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'usuarios.authentication.CookieJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # Para usar el login de Django
         'rest_framework.authentication.TokenAuthentication',    # Para aplicaciones externas
     ],
