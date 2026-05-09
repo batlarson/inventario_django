@@ -36,7 +36,7 @@ DEFAULT_FROM_EMAIL=noreply@tu-dominio.com
 DJANGO_SETTINGS_MODULE=inventario_core.settings.production
 ```
 
-#### Cambios en settings.py para producción
+#### Cambios en settings.py para producción (Agregar estas líneas a settings.py)
 
 **Agregar estas configuraciones de seguridad:**
 ```python

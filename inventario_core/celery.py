@@ -2,11 +2,11 @@ import os
 from celery import Celery
 
 # 1. Indicamos dónde están los ajustes de Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tienda_backend.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventario_core.settings')
 
 # 2. Creamos la instancia de la aplicación Celery
 # Sustituye 'tienda_backend' por el nombre de tu carpeta de proyecto
-app = Celery('tienda_backend')
+app = Celery('inventario_core')
 
 # 3. Le decimos que use la configuración de Django (prefijo CELERY_)
 app.config_from_object('django.conf:settings', namespace='CELERY')
