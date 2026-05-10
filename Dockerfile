@@ -16,7 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # 6. Recopilamos los archivos estáticos
-ENV SECRET_KEY=dummy-secret-key-for-build
 RUN python manage.py collectstatic --noinput
 
 # 7. El comando para arrancar el servidor
