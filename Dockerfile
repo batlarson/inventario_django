@@ -15,5 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 5. Copiamos el resto del código del inventario
 COPY . /app/
 
-# 6. El comando para arrancar el servidor
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# 6. Recopilamos los archivos estáticos
+ENV SECRET_KEY=dummy-secret-key-for-build
+RUN python manage.py collectstatic --noinput
+
+# 7. El comando para arrancar el servidor
+CMD ["gunicorn", "inventario_core.wsgi:application", "--bind", "0.0.0.0:8000"]
