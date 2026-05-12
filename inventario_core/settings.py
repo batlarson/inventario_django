@@ -139,7 +139,8 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 
 LOGIN_URL = 'login'
@@ -193,6 +194,26 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 # Lo pondremos en la raíz del proyecto, junto a manage.py
 LOG_FILE_PATH = os.path.join(BASE_DIR, 'tienda_errores.log')
 
+HANDLERS_LIST = ['console']
+HANDLERS_CONFIG = {
+    # Esto manda los mensajes a la consola (para cuando programas)
+    'console': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'profesional',
+    },
+}
+
+if DEBUG:
+    HANDLERS_LIST.append('file')
+    HANDLERS_CONFIG['file'] = {
+        # Esto es la CAJA NEGRA: guarda en un archivo de texto
+        'level': 'WARNING', # Solo guarda de WARNING para arriba (Error, Critical)
+        'class': 'logging.FileHandler',
+        'filename': LOG_FILE_PATH,
+        'formatter': 'profesional',
+    }
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -203,20 +224,7 @@ LOGGING = {
             'style': '{',
         },
     },
-    'handlers': {
-        # Esto manda los mensajes a la consola (para cuando programas)
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'profesional',
-        },
-        # Esto es la CAJA NEGRA: guarda en un archivo de texto
-        'file': {
-            'level': 'WARNING', # Solo guarda de WARNING para arriba (Error, Critical)
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILE_PATH,
-            'formatter': 'profesional',
-        },
-    },
+    'handlers': HANDLERS_CONFIG,
     'loggers': {
         # Atrapamos todos los logs de nuestra app
         '': { 
