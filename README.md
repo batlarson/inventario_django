@@ -4,13 +4,13 @@ Sistema de gestión de inventario desarrollado con **Django** que integra un mot
 
 ## 🌟 Características Principales
 * **🤖 Motor IA Heurístico:** Algoritmo que analiza stock y precio para sugerir acciones de reabastecimiento en tiempo real.
-* ** Proteccion JWT:** httpOnly cookies para proteger en envio de data.
+* **🔐 Proteccion JWT:** httpOnly cookies para proteger en envio de data.
 * **📄 Reporting Pro:** Generación de informes PDF dinámicos utilizando **ReportLab** con categorización visual de estados críticos.
-* ** Testing:** Creacion con usuarios de prueba para probar la seguridad de datos y protección básica de los productos, además de un mock de nuestra "IA".
+* **🧪 Testing:** Creacion con usuarios de prueba para probar la seguridad de datos y protección básica de los productos, además de un mock de nuestra "IA".
 * **⚙️ Arquitectura de Eventos:** Uso de **Django Signals** para auditoría de stock y gestión automatizada de archivos multimedia.
 * **🔌 API REST:** Backend totalmente desacoplado y documentado con **Swagger/OpenAPI**.
 * **🐳 Dockerizado:** Entorno de desarrollo listo para desplegar con contenedores.
-* ** Produccion:** Desplegado totalmente en railway
+* **🚀 Produccion:** Desplegado totalmente en railway
 
 ## 🛠️ Stack Tecnológico
 * **Backend:** Python 3.x, Django 6.x
